@@ -1,0 +1,23 @@
+# Reject pods in the airflow namespace whose containers don't drop NET_RAW (k3s/flannel ARP-spoofing warning).
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: drop-net-raw
+spec:
+  matchConstraints:
+    resourceRules:
+    - {apiGroups: [""], apiVersions: ["v1"], operations: ["CREATE"], resources: ["pods"]}
+  validations:
+  - expression: "object.spec.containers.all(c, c.?securityContext.?capabilities.?drop.orValue([]).exists(d, d in ['NET_RAW', 'ALL']))"
+    message: "containers must drop NET_RAW"
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: drop-net-raw
+spec:
+  policyName: drop-net-raw
+  validationActions: [Deny]
+  matchResources:
+    namespaceSelector:
+      matchLabels: {kubernetes.io/metadata.name: airflow}

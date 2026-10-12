@@ -1,0 +1,9 @@
+*.crt
+*.key
+*.tar.gz
+*.csr
+helm
+k
+k3s
+kubectl
+*kubeconfig*

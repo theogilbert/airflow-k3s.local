@@ -1,0 +1,5 @@
+ingress:
+  apiServer:
+    enabled: true
+    hosts:
+      - name: airflow.localhost
