@@ -30,6 +30,17 @@ ln -s kubectl k
 sudo k3s server
 ```
 
+## Trust cluster networks in firewalld
+
+```bash
+# Fedora's firewalld rejects forwarded pod-to-pod traffic on the cni0 bridge (traffic via a service IP still works).
+# Traefik sends requests straight to pod IPs, so ingresses returned 502 Bad Gateway:
+#   from the traefik pod: wget http://<pod-ip>:8080/  ->  Host is unreachable
+sudo firewall-cmd --permanent --zone=trusted --add-source=10.42.0.0/16   # pods
+sudo firewall-cmd --permanent --zone=trusted --add-source=10.43.0.0/16   # services
+sudo firewall-cmd --reload
+```
+
 ## Copy root kubeconfig
 
 ```bash
